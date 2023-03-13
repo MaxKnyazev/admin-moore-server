@@ -1,47 +1,23 @@
-import { Guest } from './guests.model.js';
+import { DayResult } from './dayResults.model.js';
 
-class GuestsServices {
-  getAllGuests = async () => {
+class DayResultsServices {
+  getAllDayResults = async () => {
     try {
-      const guests = await Guest.findAll({
+      const dayResults = await DayResult.findAll({
         raw: true,
       });
       
-      return guests;
+      return dayResults;
     } catch (error) {
       throw new Error(error);
     }
   }
 
-  addGuest = async (options) => {
+  addDayResult = async (options) => {
     try {
-      const guest = await Guest.create(options);
+      const dayResult = await DayResult.create(options);
       
-      return guest;
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
-
-  editGuest = async (id, options) => {
-    try {
-      await Guest.update(
-        options,
-
-        {
-          where: {
-            id
-          }
-        }
-      )
-      
-      const editedGuest = await Guest.findOne({
-        where: {
-          id
-        }}
-      )
-
-      return editedGuest;
+      return dayResult;
     } catch (error) {
       throw new Error(error);
     }
@@ -98,4 +74,4 @@ class GuestsServices {
   // }
 }
 
-export default new GuestsServices();
+export default new DayResultsServices();

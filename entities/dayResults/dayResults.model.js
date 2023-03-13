@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { database } from '../../database/database.js';
 
-const Guest = database.define('am_guest', {
+const DayResult = database.define('am_day_result', {
   id: {
     type: DataTypes.UUIDV4,
     allowNull: false,
@@ -24,52 +24,37 @@ const Guest = database.define('am_guest', {
     allowNull: false,
   },
 
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-
-  group: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-
-  start_time: {
-    type: DataTypes.TIME,
-    allowNull: false,
-  },
-
-  stop_time: {
-    type: DataTypes.TIME,
-    allowNull: true,
-  },
-
-  minutes: {
+  start_money: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
   },
 
-  tariffs_id: {
-    type: DataTypes.UUIDV4,
+  guests: {
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
 
   cash: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
   },
 
   non_cash: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
+  },
+
+  salary: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   },
 
   result_money: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
   },
 }, {
   timestamps: false,
 });
 
-export { Guest };
+export { DayResult };

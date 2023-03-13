@@ -1,52 +1,12 @@
-import guestsServices from './guests.services.js';
+import dayResultsServices from './dayResults.services.js';
 
-class GuestsControllers {
-  getAllGuests = async (req, res) => {
+class DayResultsControllers {
+  getAllDayResults = async (req, res) => {
     try {
-      const guests = await guestsServices.getAllGuests();
+      const dayResults = await dayResultsServices.getAllDayResults();
       
       return res.status(200).json({
-        guests,
-        error: null,
-      })
-    } catch (error) {
-      return res.status(500).json({
-        error: error.message,
-      })
-    }
-  }
-
-  addGuest = async (req, res) => {
-    try {
-      const options = req.body;
-      const guest = await guestsServices.addGuest(options);
-      
-      return res.status(200).json({
-        guest,
-        error: null,
-      })
-    } catch (error) {
-      return res.status(500).json({
-        error: error.message,
-      })
-    }
-  }
-
-  editGuest = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const options = req.body;
-
-      if (!id) {
-        return res.status(400).json({
-          error: 'Параметр id не передан',
-        })
-      }
-
-      const editedGuest = await guestsServices.editGuest(id, options);
-      
-      return res.status(200).json({
-        editedGuest,
+        dayResults,
         error: null,
       })
     } catch (error) {
@@ -110,4 +70,4 @@ class GuestsControllers {
   // }
 }
 
-export default new GuestsControllers();
+export default new DayResultsControllers();
