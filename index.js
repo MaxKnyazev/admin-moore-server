@@ -10,6 +10,8 @@ import { DayResult } from './entities/dayResults/dayResults.model.js';
 import { dayResultsRoutes } from './entities/dayResults/dayResults.routes.js';
 import { CashboxLog } from './entities/cashboxLogs/cashboxLogs.model.js';
 import { cashboxLogsRoutes } from './entities/cashboxLogs/cashboxLogs.routes.js';
+import { Tariff } from './entities/tariffs/tariffs.model.js';
+import { tariffsRoutes } from './entities/tariffs/tariffs.routes.js';
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -24,6 +26,7 @@ app.use('/guests', guestsRoutes);
 app.use('/users', usersRoutes);
 app.use('/dayResults', dayResultsRoutes);
 app.use('/cashboxLogs', cashboxLogsRoutes);
+app.use('/tariffs', tariffsRoutes);
 
 const start = async () => {
   try {
@@ -42,6 +45,9 @@ const start = async () => {
     await CashboxLog.sync({});
     console.log(chalk.blue(`CashboxLog model has been sync successfully...`));
 
+    await Tariff.sync({});
+    console.log(chalk.blue(`Tariff model has been sync successfully...`));
+    
     app.listen(PORT, () => {
       console.log(chalk.bgGreen(`Server started on port ${PORT}...`));
     })
