@@ -51,7 +51,7 @@ const Guest = database.define('am_guest', {
 
   tariffs_id: {
     type: DataTypes.UUIDV4,
-    allowNull: false,
+    allowNull: true,
   },
 
   cash: {
