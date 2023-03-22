@@ -1,4 +1,5 @@
 import { Guest } from './guests.model.js';
+import { convertTimeStringToObject, calculateMinutes } from '../../utils/utils.js';
 
 class GuestsServices {
   getAllGuests = async () => {
@@ -27,21 +28,58 @@ class GuestsServices {
     try {
       await Guest.update(
         options,
-
         {
-          where: {
-            id
-          }
+          where: { id }
         }
       )
       
       const editedGuest = await Guest.findOne({
-        where: {
-          id
-        }}
-      )
+        where: { id }
+      })
 
       return editedGuest;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  calculateMoney = async (id, stopTime) => {
+    try {
+      await Guest.update(
+        {
+          stop_time: stopTime
+        },
+
+        {
+          where: { id }
+        }
+      )
+      
+      let calculatedGuest = await Guest.findOne({
+        where: { id }
+      })
+      calculatedGuest = calculatedGuest.dataValues;
+
+      let minutes = calculateMinutes(
+        convertTimeStringToObject(calculatedGuest.start_time),
+        convertTimeStringToObject(calculatedGuest.stop_time),
+      )
+
+      await Guest.update(
+        {
+          minutes,
+        },
+
+        {
+          where: { id }
+        }
+      )
+
+      calculatedGuest = await Guest.findOne({
+        where: { id }
+      })
+
+      return calculatedGuest;
     } catch (error) {
       throw new Error(error);
     }
@@ -66,32 +104,6 @@ class GuestsServices {
   //       message,
   //       id
   //     };
-  //   } catch (error) {
-  //     throw new Error(error);
-  //   }
-  // }
-
-  // editUser = async ({id, role}) => {
-  //   try {
-  //     await User.update(
-  //       {
-  //         role,
-  //       },
-
-  //       {
-  //         where: {
-  //           users_id: id
-  //         }
-  //       }
-  //     )
-      
-  //     const editedUser = await User.findOne({
-  //       where: {
-  //         users_id: id
-  //       }}
-  //     )
-
-  //     return editedUser;
   //   } catch (error) {
   //     throw new Error(error);
   //   }

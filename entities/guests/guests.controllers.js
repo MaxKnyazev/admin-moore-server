@@ -56,6 +56,36 @@ class GuestsControllers {
     }
   }
 
+  calculateMoney = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const stopTime = req.body;
+
+      if (!id) {
+        return res.status(400).json({
+          error: 'Параметр id не передан',
+        })
+      }
+
+      if (!stopTime) {
+        return res.status(400).json({
+          error: 'Параметр stopTime не передан',
+        })
+      }
+
+      const calculatedGuest = await guestsServices.calculateMoney(id, stopTime);
+      
+      return res.status(200).json({
+        calculatedGuest,
+        error: null,
+      })
+    } catch (error) {
+      return res.status(500).json({
+        error: error.message,
+      })
+    }
+  }
+
   // deleteUser = async (req, res) => {
   //   try {
   //     const { id } = req.params;

@@ -11,4 +11,8 @@ guestsRoutes.route('/add')
 
 guestsRoutes.route('/edit/:id')
   .put(guestsControllers.editGuest);
+
+guestsRoutes.route('/calculate/:id')
+  .put(guestsControllers.calculateMoney);
+
 export { guestsRoutes };
