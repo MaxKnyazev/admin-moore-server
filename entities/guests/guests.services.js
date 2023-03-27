@@ -1,5 +1,6 @@
 import { Guest } from './guests.model.js';
-import { convertTimeStringToObject, calculateMinutes } from '../../utils/utils.js';
+// import { DayResults } from '../dayResults/dayResults.model.js';
+import { convertTimeStringToObject, calculateMinutes, convertMinutesToMoney } from '../../utils/utils.js';
 
 class GuestsServices {
   getAllGuests = async () => {
@@ -33,9 +34,10 @@ class GuestsServices {
         }
       )
       
-      const editedGuest = await Guest.findOne({
+      let editedGuest = await Guest.findOne({
         where: { id }
       })
+      editedGuest = editedGuest.dataValues;
 
       return editedGuest;
     } catch (error) {
@@ -45,41 +47,40 @@ class GuestsServices {
 
   calculateMoney = async (id, stopTime) => {
     try {
-      await Guest.update(
-        {
-          stop_time: stopTime
-        },
-
-        {
-          where: { id }
+      let editedGuest = await this.editGuest(
+        id, 
+        { 
+          stop_time: stopTime 
         }
       )
-      
-      let calculatedGuest = await Guest.findOne({
-        where: { id }
-      })
-      calculatedGuest = calculatedGuest.dataValues;
 
       let minutes = calculateMinutes(
-        convertTimeStringToObject(calculatedGuest.start_time),
-        convertTimeStringToObject(calculatedGuest.stop_time),
+        convertTimeStringToObject(editedGuest.start_time),
+        convertTimeStringToObject(editedGuest.stop_time),
       )
 
-      await Guest.update(
-        {
-          minutes,
-        },
-
-        {
-          where: { id }
+      editedGuest = await this.editGuest(
+        id, 
+        { 
+          minutes, 
         }
       )
 
-      calculatedGuest = await Guest.findOne({
-        where: { id }
+      let result = convertMinutesToMoney({
+        minutes: editedGuest.minutes,
+        isHoliday: false,
+        tariffsId: '1',
       })
 
-      return calculatedGuest;
+      editedGuest = await this.editGuest(
+        id, 
+        { 
+          for_payment: result.forPayment, 
+          payment_description: result.paymentDescription,
+        }
+      )
+
+      return editedGuest;
     } catch (error) {
       throw new Error(error);
     }

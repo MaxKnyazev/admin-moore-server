@@ -53,6 +53,12 @@ const DayResult = database.define('am_day_result', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+
+  is_holiday: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+  },
 }, {
   timestamps: false,
 });

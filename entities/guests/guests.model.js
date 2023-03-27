@@ -73,6 +73,11 @@ const Guest = database.define('am_guest', {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
+
+  payment_description: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
 }, {
   timestamps: false,
 });
