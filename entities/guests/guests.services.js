@@ -68,6 +68,7 @@ class GuestsServices {
 
       let result = convertMinutesToMoney({
         minutes: editedGuest.minutes,
+        breakMinutes: editedGuest.break_minutes,
         isHoliday: false,
         tariffsId: '1',
       })
@@ -81,6 +82,52 @@ class GuestsServices {
       )
 
       return editedGuest;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  calculateBreak = async (id, breakStopTime) => {
+    try {
+      let editedGuest = await this.editGuest(
+        id, 
+        { 
+          break_stop_time: breakStopTime 
+        }
+      )
+
+      let breakMinutes = calculateMinutes(
+        convertTimeStringToObject(editedGuest.break_start_time),
+        convertTimeStringToObject(editedGuest.break_stop_time),
+      )
+
+      console.log('********************************** services');
+      console.log(breakMinutes);
+
+      editedGuest = await this.editGuest(
+        id, 
+        { 
+          break_minutes: +editedGuest.break_minutes + +breakMinutes, 
+        }
+      )
+
+      // let result = convertMinutesToMoney({
+      //   minutes: editedGuest.minutes,
+      //   isHoliday: false,
+      //   tariffsId: '1',
+      // })
+
+      let breakGuest = await this.editGuest(
+        id, 
+        { 
+          // for_payment: result.forPayment,
+          break_start_time: null, 
+          break_stop_time: null, 
+          is_break: false,
+        }
+      )
+
+      return breakGuest;
     } catch (error) {
       throw new Error(error);
     }

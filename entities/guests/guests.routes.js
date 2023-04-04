@@ -15,4 +15,7 @@ guestsRoutes.route('/edit/:id')
 guestsRoutes.route('/calculate/:id')
   .put(guestsControllers.calculateMoney);
 
+guestsRoutes.route('/break/:id')
+  .put(guestsControllers.calculateBreak);
+
 export { guestsRoutes };

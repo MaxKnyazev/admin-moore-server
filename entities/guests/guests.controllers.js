@@ -59,7 +59,10 @@ class GuestsControllers {
   calculateMoney = async (req, res) => {
     try {
       const { id } = req.params;
-      const stopTime = req.body;
+      const { stopTime } = req.body;
+
+      // console.log('********************************** controllers');
+      // console.log(stopTime);
 
       if (!id) {
         return res.status(400).json({
@@ -77,6 +80,41 @@ class GuestsControllers {
       
       return res.status(200).json({
         calculatedGuest,
+        error: null,
+      })
+    } catch (error) {
+      return res.status(500).json({
+        error: error.message,
+      })
+    }
+  }
+
+  calculateBreak = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { breakStopTime } = req.body;
+
+      console.log(req.body)
+
+      // console.log('********************************** controllers');
+      // console.log(breakStopTime);
+
+      if (!id) {
+        return res.status(400).json({
+          error: 'Параметр id не передан',
+        })
+      }
+
+      if (!breakStopTime) {
+        return res.status(400).json({
+          error: 'Параметр stopTime не передан',
+        })
+      }
+
+      const breakGuest = await guestsServices.calculateBreak(id, breakStopTime);
+      
+      return res.status(200).json({
+        breakGuest,
         error: null,
       })
     } catch (error) {

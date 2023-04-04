@@ -25,12 +25,13 @@ export const calculateMinutes = (startTimeObj, stopTimeObj) => {
   return minutes;
 }
 
-export const convertMinutesToMoney = ({minutes, isHoliday = false, tariffsId = '1'}) => {
+export const convertMinutesToMoney = ({minutes, breakMinutes, isHoliday = false, tariffsId = '1'}) => {
   let result;
 
   switch (tariffsId) {
     case '1':
-      result = standartTariff(minutes);
+      result = standartTariff(minutes - breakMinutes);
+      result.paymentDescription += ` Перерыв :${breakMinutes}:`
       break;
 
     default:

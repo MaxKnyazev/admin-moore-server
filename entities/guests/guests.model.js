@@ -78,6 +78,27 @@ const Guest = database.define('am_guest', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+
+  break_start_time: {
+    type: DataTypes.TIME,
+    allowNull: true,
+  },
+
+  break_stop_time: {
+    type: DataTypes.TIME,
+    allowNull: true,
+  },
+
+  break_minutes: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+
+  is_break: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+  }
 }, {
   timestamps: false,
 });
