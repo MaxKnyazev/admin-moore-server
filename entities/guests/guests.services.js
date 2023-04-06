@@ -70,7 +70,7 @@ class GuestsServices {
         minutes: editedGuest.minutes,
         breakMinutes: editedGuest.break_minutes,
         isHoliday: false,
-        tariffsId: '1',
+        tariffsId: editedGuest.tariffs_id,
       })
 
       editedGuest = await this.editGuest(
