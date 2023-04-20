@@ -111,16 +111,9 @@ class GuestsServices {
         }
       )
 
-      // let result = convertMinutesToMoney({
-      //   minutes: editedGuest.minutes,
-      //   isHoliday: false,
-      //   tariffsId: '1',
-      // })
-
       let breakGuest = await this.editGuest(
         id, 
         { 
-          // for_payment: result.forPayment,
           break_start_time: null, 
           break_stop_time: null, 
           is_break: false,

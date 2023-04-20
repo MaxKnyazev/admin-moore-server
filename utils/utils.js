@@ -11,15 +11,18 @@ export const convertTimeStringToObject = timeString => {
 }
 
 export const calculateMinutes = (startTimeObj, stopTimeObj) => {
+  const SECONDS_IN_MINUTE = 60;
+  const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
+  const SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
   let minutes = 0;
 
-  let startTimeSeconds = (startTimeObj.hours * 3600) + (startTimeObj.minutes * 60) + startTimeObj.seconds;
-  let stopTimeSeconds = (stopTimeObj.hours * 3600) + (stopTimeObj.minutes * 60) + stopTimeObj.seconds;
+  let startTimeSeconds = (startTimeObj.hours * SECONDS_IN_HOUR) + (startTimeObj.minutes * SECONDS_IN_MINUTE) + startTimeObj.seconds;
+  let stopTimeSeconds = (stopTimeObj.hours * SECONDS_IN_HOUR) + (stopTimeObj.minutes * SECONDS_IN_MINUTE) + stopTimeObj.seconds;
   
-  minutes = Math.round((stopTimeSeconds - startTimeSeconds) / 60);
+  minutes = Math.round((stopTimeSeconds - startTimeSeconds) / SECONDS_IN_MINUTE);
 
   if (minutes < 0) {
-    throw new Error('Гость ушел раньше, чем пришел!');
+    minutes = Math.round((stopTimeSeconds - startTimeSeconds + SECONDS_IN_DAY) / SECONDS_IN_MINUTE);
   }
   
   return minutes;

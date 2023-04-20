@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { database } from '../../database/database.js';
 
-const DayResult = database.define('am_day_result', {
+const Shift = database.define('am_shift', {
   id: {
     type: DataTypes.UUIDV4,
     allowNull: false,
@@ -9,9 +9,24 @@ const DayResult = database.define('am_day_result', {
     autoIncrement: true,
   },
 
-  date: {
+  start_date: {
     type: DataTypes.DATE,
     allowNull: false,
+  },
+
+  stop_date: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+
+  start_time: {
+    type: DataTypes.TIME,
+    allowNull: false,
+  },
+
+  stop_time: {
+    type: DataTypes.TIME,
+    allowNull: true,
   },
 
   users_id: {
@@ -63,4 +78,4 @@ const DayResult = database.define('am_day_result', {
   timestamps: false,
 });
 
-export { DayResult };
+export { Shift };

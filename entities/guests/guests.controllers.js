@@ -61,9 +61,6 @@ class GuestsControllers {
       const { id } = req.params;
       const { stopTime } = req.body;
 
-      // console.log('********************************** controllers');
-      // console.log(stopTime);
-
       if (!id) {
         return res.status(400).json({
           error: 'Параметр id не передан',
@@ -94,11 +91,6 @@ class GuestsControllers {
       const { id } = req.params;
       const { breakStopTime } = req.body;
 
-      console.log(req.body)
-
-      // console.log('********************************** controllers');
-      // console.log(breakStopTime);
-
       if (!id) {
         return res.status(400).json({
           error: 'Параметр id не передан',
@@ -123,59 +115,6 @@ class GuestsControllers {
       })
     }
   }
-
-  // deleteUser = async (req, res) => {
-  //   try {
-  //     const { id } = req.params;
-
-  //     if (!id) {
-  //       return res.status(400).json({
-  //         error: 'Параметр id не передан',
-  //       })
-  //     }
-
-  //     const result = await usersServices.deleteUser(id);
-
-  //     if (result.error) {
-  //       return res.status(400).json({
-  //         error: result.error,
-  //       })
-  //     }
-      
-  //     return res.status(200).json({
-  //       result,
-  //       error: null,
-  //     })
-  //   } catch (error) {
-  //     return res.status(500).json({
-  //       error: error.message,
-  //     })
-  //   }
-  // }
-
-  // editUser = async (req, res) => {
-  //   try {
-  //     const { id } = req.params;
-  //     const { role } = req.body;
-
-  //     if (!id) {
-  //       return res.status(400).json({
-  //         error: 'Параметр id не передан',
-  //       })
-  //     }
-
-  //     const editedUser = await usersServices.editUser({id, role});
-      
-  //     return res.status(200).json({
-  //       editedUser,
-  //       error: null,
-  //     })
-  //   } catch (error) {
-  //     return res.status(500).json({
-  //       error: error.message,
-  //     })
-  //   }
-  // }
 }
 
 export default new GuestsControllers();
