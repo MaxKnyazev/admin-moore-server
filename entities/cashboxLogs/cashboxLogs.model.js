@@ -9,8 +9,8 @@ const CashboxLog = database.define('am_cashbox_logs', {
     autoIncrement: true,
   },
 
-  date: {
-    type: DataTypes.DATE,
+  time: {
+    type: DataTypes.TIME,
     allowNull: false,
   },
 
@@ -24,12 +24,22 @@ const CashboxLog = database.define('am_cashbox_logs', {
     allowNull: false,
   },
 
-  input: {
+  input_cash: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
 
-  output: {
+  output_cash: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+
+  input_non_cash: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+
+  output_non_cash: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
@@ -37,6 +47,11 @@ const CashboxLog = database.define('am_cashbox_logs', {
   desctiption: {
     type: DataTypes.TEXT,
     allowNull: true,
+  },
+
+  shifts_id: {
+    type: DataTypes.UUIDV4,
+    allowNull: false,
   }
 }, {
   timestamps: false,
