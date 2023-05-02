@@ -25,7 +25,7 @@ app.use(express.urlencoded({
 app.use('/guests', guestsRoutes);
 app.use('/users', usersRoutes);
 app.use('/shifts', shiftsRoutes);
-app.use('/cashboxLogs', cashboxLogsRoutes);
+app.use('/cashbox', cashboxLogsRoutes);
 app.use('/tariffs', tariffsRoutes);
 
 const start = async () => {

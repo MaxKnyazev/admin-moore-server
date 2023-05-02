@@ -44,7 +44,7 @@ const CashboxLog = database.define('am_cashbox_logs', {
     allowNull: true,
   },
 
-  desctiption: {
+  description: {
     type: DataTypes.TEXT,
     allowNull: true,
   },

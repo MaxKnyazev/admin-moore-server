@@ -20,6 +20,7 @@ class CashboxLogsControllers {
     try {
       const options = req.body;
       const cashboxLog = await cashboxLogsServices.addCashboxLog(options);
+      // console.log(cashboxLog);
       
       return res.status(200).json({
         cashboxLog,
