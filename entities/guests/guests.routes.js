@@ -18,4 +18,8 @@ guestsRoutes.route('/calculate/:id')
 guestsRoutes.route('/break/:id')
   .put(guestsControllers.calculateBreak);
 
+guestsRoutes.route('/getByShiftsId/:shiftsId')
+  .get(guestsControllers.getGuestsByShiftsId);
+
+
 export { guestsRoutes };

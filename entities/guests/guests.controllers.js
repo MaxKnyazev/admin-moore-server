@@ -115,6 +115,22 @@ class GuestsControllers {
       })
     }
   }
+
+  getGuestsByShiftsId = async (req, res) => {
+    try {
+      const shiftsId = req.params.shiftsId;
+      const guestsByShiftsId = await guestsServices.getGuestsByShiftsId(shiftsId);
+      
+      return res.status(200).json({
+        guestsByShiftsId,
+        error: null,
+      })
+    } catch (error) {
+      return res.status(500).json({
+        error: error.message,
+      })
+    }
+  }
 }
 
 export default new GuestsControllers();

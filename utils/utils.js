@@ -39,6 +39,7 @@ export const convertMinutesToMoney = ({minutes, breakMinutes, isHoliday = false,
 
     case '2':
       result = childTariff(minutes - breakMinutes);
+      // result = standartTariff(minutes - breakMinutes);
       result.paymentDescription += ` Перерыв :${breakMinutes}:`
       result.paymentDescription += ` Детский тариф`
       break;
@@ -132,6 +133,8 @@ const childTariff = minutes => {
   if (minutes <= HOUR) {
     result.forPayment = minutes * MONEY_PER_MINUTE_FIRST_HOUR;
     result.paymentDescription += `За 1-ый час :${minutes * MONEY_PER_MINUTE_FIRST_HOUR}: `;
+
+    result.forPayment = Math.round(result.forPayment);
     return result;
   }
 
@@ -143,6 +146,8 @@ const childTariff = minutes => {
 
     result.forPayment += minutes * MONEY_PER_MINUTE_SECOND_HOUR;
     result.paymentDescription += `За 2-ой час :${minutes * MONEY_PER_MINUTE_SECOND_HOUR}: `;
+
+    result.forPayment = Math.round(result.forPayment);
     return result;
   }
 
@@ -158,5 +163,6 @@ const childTariff = minutes => {
   result.forPayment += minutes * MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS;
   result.paymentDescription += `За 3-ий час :${minutes * MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS}: `;
 
+  result.forPayment = Math.round(result.forPayment);
   return result;
 }

@@ -98,6 +98,11 @@ const Guest = database.define('am_guest', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
     allowNull: false,
+  },
+
+  shifts_id: {
+    type: DataTypes.UUIDV4,
+    allowNull: false,
   }
 }, {
   timestamps: false,

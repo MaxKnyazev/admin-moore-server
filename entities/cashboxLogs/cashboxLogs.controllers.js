@@ -33,6 +33,22 @@ class CashboxLogsControllers {
     }
   }
 
+  getCashboxLogsByShiftsId = async (req, res) => {
+    try {
+      const shiftsId = req.params.shiftsId;
+      const cashboxLogsByShiftsId = await cashboxLogsServices.getCashboxLogsByShiftsId(shiftsId);
+      
+      return res.status(200).json({
+        cashboxLogsByShiftsId,
+        error: null,
+      })
+    } catch (error) {
+      return res.status(500).json({
+        error: error.message,
+      })
+    }
+  }
+
 }
 
 export default new CashboxLogsControllers();

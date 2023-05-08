@@ -9,4 +9,7 @@ cashboxLogsRoutes.route('/')
 cashboxLogsRoutes.route('/add')
   .post(cashboxLogsControllers.addCashboxLog);
 
+cashboxLogsRoutes.route('/getByShiftsId/:shiftsId')
+  .get(cashboxLogsControllers.getCashboxLogsByShiftsId);
+
 export { cashboxLogsRoutes };

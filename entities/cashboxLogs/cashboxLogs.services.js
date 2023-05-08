@@ -22,6 +22,21 @@ class CashboxLogsServices {
       throw new Error(error);
     }
   }
+
+  getCashboxLogsByShiftsId = async (shiftsId) => {
+    try {
+      const cashboxLogsByShiftsId = await CashboxLog.findAll({
+        raw: true,
+        where: {
+          shifts_id: shiftsId,
+        }
+      });
+      
+      return cashboxLogsByShiftsId;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
 }
 
 export default new CashboxLogsServices();

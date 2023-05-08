@@ -126,6 +126,21 @@ class GuestsServices {
     }
   }
 
+  getGuestsByShiftsId = async (shiftsId) => {
+    try {
+      const guestsByShiftsId = await Guest.findAll({
+        raw: true,
+        where: {
+          shifts_id: shiftsId,
+        }
+      });
+      
+      return guestsByShiftsId;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
   // deleteUser = async (id) => {
   //   try {
   //     const countDeletedUsers = await User.destroy({
