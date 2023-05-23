@@ -9,6 +9,9 @@ guestsRoutes.route('/')
 guestsRoutes.route('/add')
   .post(guestsControllers.addGuest);
 
+guestsRoutes.route('/addGroup')
+  .post(guestsControllers.addGroup);
+
 guestsRoutes.route('/edit/:id')
   .put(guestsControllers.editGuest);
 

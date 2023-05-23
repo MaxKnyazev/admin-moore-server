@@ -32,6 +32,22 @@ class GuestsControllers {
     }
   }
 
+  addGroup = async (req, res) => {
+    try {
+      const options = req.body;
+      const group = await guestsServices.addGroup(options);
+      
+      return res.status(200).json({
+        group,
+        error: null,
+      })
+    } catch (error) {
+      return res.status(500).json({
+        error: error.message,
+      })
+    }
+  }
+
   editGuest = async (req, res) => {
     try {
       const { id } = req.params;

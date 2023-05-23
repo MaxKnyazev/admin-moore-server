@@ -1,6 +1,7 @@
 import { Guest } from './guests.model.js';
 // import { DayResults } from '../dayResults/dayResults.model.js';
 import { convertTimeStringToObject, calculateMinutes, convertMinutesToMoney } from '../../utils/utils.js';
+import { v4 as uuidv4 } from 'uuid';
 
 class GuestsServices {
   getAllGuests = async () => {
@@ -20,6 +21,24 @@ class GuestsServices {
       const guest = await Guest.create(options);
       
       return guest;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  addGroup = async (options) => {
+    try {
+      const group = [];
+      const group_id = uuidv4(); 
+      for (const option of options) {
+        const guest = await Guest.create({
+          ...option,
+          group_id
+        });
+        group.push(guest);
+      }
+      
+      return group;
     } catch (error) {
       throw new Error(error);
     }

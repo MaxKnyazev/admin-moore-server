@@ -29,8 +29,13 @@ const Guest = database.define('am_guest', {
     allowNull: false,
   },
 
-  group: {
+  group_name: {
     type: DataTypes.STRING,
+    allowNull: true,
+  },
+
+  group_id: {
+    type: DataTypes.UUIDV4,
     allowNull: true,
   },
 
