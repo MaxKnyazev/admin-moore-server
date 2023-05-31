@@ -1,47 +1,165 @@
+export const SECONDS_IN_MINUTE = 60;
+export const SECONDS_IN_HOUR = 60 * 60;
+export const SECONDS_IN_DAY = 60 * 60 * 24;
+
+export const HOUR = 60;
+export const MONEY_PER_MINUTE_FIRST_HOUR = 6;
+export const MONEY_PER_MINUTE_SECOND_HOUR = 3;
+export const MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS = 2;
+
+export const MONEY_PER_MINUTE_FIRST_HOUR_CHILD = 4.2;
+export const MONEY_PER_MINUTE_SECOND_HOUR_CHILD = 3;
+export const MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS_CHILD = 2;
+
 export const convertTimeStringToObject = timeString => {
-  if (timeString.length !== 8) {
-    throw new Error('Невалидное время');
+  if (!timeString) {
+    throw new Error('Значение времени не передано!');
   }
-  timeString = timeString.split(':');
+  if (typeof timeString !== 'string') {
+    timeString = String(timeString);
+  }
+  if (timeString.length !== 8) {
+    throw new Error('Невалидный формат : длина timeString НЕ РАВНА 8');
+  }
+
+  const timeStringOnlyNumbers = timeString.split(':').join('')+'00';
+
+  for (let char of timeStringOnlyNumbers) {
+    if (char.codePointAt(0) < 48 || char.codePointAt(0) > 57) {
+      throw new Error('Невалидный формат : допустимые символы : "0123456789"');
+    } 
+  }
+
+  if (timeString[2] !== ':' || timeString[5] !== ':') {
+    throw new Error('Невалидный формат : верный формат XX:XX:XX');
+  }
+  
+  const timeStringArr = timeString.split(':');
+
+  if (+timeStringArr[0] < 0 || +timeStringArr[0] > 23) {
+    throw new Error('Значение часов не лежит в диапазоне 0-23');
+  }
+  if (+timeStringArr[1] < 0 || +timeStringArr[1] > 59) {
+    throw new Error('Значение минут не лежит в диапазоне 0-59');
+  }
+  if (+timeStringArr[2] < 0 || +timeStringArr[2] > 59) {
+    throw new Error('Значение секунд не лежит в диапазоне 0-59');
+  }
+
   return {
-    hours: +timeString[0],
-    minutes: +timeString[1],
-    seconds: +timeString[2],
+    hours: +timeStringArr[0],
+    minutes: +timeStringArr[1],
+    seconds: +timeStringArr[2],
   }
 }
 
-export const calculateMinutes = (startTimeObj, stopTimeObj) => {
-  const SECONDS_IN_MINUTE = 60;
-  const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
-  const SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
-  let minutes = 0;
+export const calculateSeconds = time => time.hours * SECONDS_IN_HOUR + time.minutes * SECONDS_IN_MINUTE + time.seconds;
 
-  let startTimeSeconds = (startTimeObj.hours * SECONDS_IN_HOUR) + (startTimeObj.minutes * SECONDS_IN_MINUTE) + startTimeObj.seconds;
-  let stopTimeSeconds = (stopTimeObj.hours * SECONDS_IN_HOUR) + (stopTimeObj.minutes * SECONDS_IN_MINUTE) + stopTimeObj.seconds;
+export const calculateMinutes = (startTimeObj, stopTimeObj) => {
+  let minutes = 0;
+  const startTimeSeconds = calculateSeconds(startTimeObj);
+  const stopTimeSeconds  = calculateSeconds(stopTimeObj);
   
   minutes = Math.round((stopTimeSeconds - startTimeSeconds) / SECONDS_IN_MINUTE);
 
   if (minutes < 0) {
     minutes = Math.round((stopTimeSeconds - startTimeSeconds + SECONDS_IN_DAY) / SECONDS_IN_MINUTE);
   }
-  
+
   return minutes;
 }
+
+export const calculatePayment = (o, minutes, moneyPerMinute, message) => {
+  const money = Math.round(minutes * moneyPerMinute);
+  o.forPayment += money;
+  o.paymentDescription += `${message}${money}: `;
+}
+
+export const standartTariff = minutes => {
+  if (minutes === undefined) {
+    throw new Error('Значение времени не передано!');
+  }
+
+  const result = {
+    forPayment: 0,
+    paymentDescription: ''
+  }
+  // Если гость пробыл час или меньше
+  if (minutes <= HOUR) {
+    calculatePayment(result, minutes, MONEY_PER_MINUTE_FIRST_HOUR, 'За 1-ый час :');
+    return result;
+  }
+  // Если гость пробыл два часа или меньше
+  if (minutes <= HOUR * 2) {
+    calculatePayment(result, HOUR, MONEY_PER_MINUTE_FIRST_HOUR, 'За 1-ый час :');
+    minutes -= HOUR;
+    calculatePayment(result, minutes, MONEY_PER_MINUTE_SECOND_HOUR, 'За 2-ой час :');
+    return result;
+  }
+  // Если гость пробыл больше двух часов
+  calculatePayment(result, HOUR, MONEY_PER_MINUTE_FIRST_HOUR, 'За 1-ый час :');
+  minutes -= HOUR;
+  calculatePayment(result, HOUR, MONEY_PER_MINUTE_SECOND_HOUR, 'За 2-ой час :');
+  minutes -= HOUR;
+  calculatePayment(result, minutes, MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS, 'За 3-ий час и более:');
+
+  return result;
+}
+
+export const childTariff = minutes => {
+  if (minutes === undefined) {
+    throw new Error('Значение времени не передано!');
+  }
+
+  const result = {
+    forPayment: 0,
+    paymentDescription: ''
+  }
+
+  // Если гость пробыл час или меньше
+  if (minutes <= HOUR) {
+    calculatePayment(result, minutes, MONEY_PER_MINUTE_FIRST_HOUR_CHILD, 'За 1-ый час :');
+    return result;
+  }
+  // Если гость пробыл два часа или меньше
+  if (minutes <= HOUR * 2) {
+    calculatePayment(result, HOUR, MONEY_PER_MINUTE_FIRST_HOUR_CHILD, 'За 1-ый час :');
+    minutes -= HOUR;
+    calculatePayment(result, minutes, MONEY_PER_MINUTE_SECOND_HOUR_CHILD, 'За 2-ой час :');
+    return result;
+  }
+  // Если гость пробыл больше двух часов
+  calculatePayment(result, HOUR, MONEY_PER_MINUTE_FIRST_HOUR_CHILD, 'За 1-ый час :');
+  minutes -= HOUR;
+  calculatePayment(result, HOUR, MONEY_PER_MINUTE_SECOND_HOUR_CHILD, 'За 2-ой час :');
+  minutes -= HOUR;
+  calculatePayment(result, minutes, MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS_CHILD, 'За 3-ий час и более:');
+  
+  return result;
+}
+
+
+
+
+// =======================================================================================================
+
+
+
 
 export const convertMinutesToMoney = ({minutes, breakMinutes, isHoliday = false, tariffsId = '1'}) => {
   let result;
 
   switch (tariffsId) {
     case '1':
-      result = standartTariff(minutes - breakMinutes);
-      result.paymentDescription += ` Перерыв :${breakMinutes}:`
+        result = standartTariff(minutes - breakMinutes);
+        result.paymentDescription += ` Перерыв :${breakMinutes}:`
       break;
 
     case '2':
-      result = childTariff(minutes - breakMinutes);
-      // result = standartTariff(minutes - breakMinutes);
-      result.paymentDescription += ` Перерыв :${breakMinutes}:`
-      result.paymentDescription += ` Детский тариф`
+        result = childTariff(minutes - breakMinutes);
+        // result = standartTariff(minutes - breakMinutes);
+        result.paymentDescription += ` Перерыв :${breakMinutes}:`
+        result.paymentDescription += ` Детский тариф`
       break;
 
     default:
@@ -74,95 +192,55 @@ export const convertMinutesToMoney = ({minutes, breakMinutes, isHoliday = false,
   return result;
 }
 
-const standartTariff = minutes => {
-  const HOUR = 60;
-  const MONEY_PER_MINUTE_FIRST_HOUR = 6;
-  const MONEY_PER_MINUTE_SECOND_HOUR = 3;
-  const MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS = 2;
 
-  let result = {
-    forPayment: 0,
-    paymentDescription: ''
-  }
+//  ****************************************************************************************************
+//  ****************************************************************************************************
+//  ****************************************************************************************************
 
-  // Если гость пробыл час или меньше
-  if (minutes <= HOUR) {
-    result.forPayment = minutes * MONEY_PER_MINUTE_FIRST_HOUR;
-    result.paymentDescription += `За 1-ый час :${minutes * MONEY_PER_MINUTE_FIRST_HOUR}: `;
-    return result;
-  }
 
-  // Если гость пробыл два часа или меньше
-  if (minutes <= HOUR * 2) {
-    result.forPayment += HOUR * MONEY_PER_MINUTE_FIRST_HOUR;
-    result.paymentDescription += `За 1-ый час :${HOUR * MONEY_PER_MINUTE_FIRST_HOUR}: `;
-    minutes -= HOUR;
+// =======================================================================================================
 
-    result.forPayment += minutes * MONEY_PER_MINUTE_SECOND_HOUR;
-    result.paymentDescription += `За 2-ой час :${minutes * MONEY_PER_MINUTE_SECOND_HOUR}: `;
-    return result;
-  }
+// export const standartTariff = minutes => {
+//   if (minutes === undefined) {
+//     throw new Error('Значение времени не передано!');
+//   }
 
-  // Если гость пробыл больше двух часов
-  result.forPayment += HOUR * MONEY_PER_MINUTE_FIRST_HOUR;
-  result.paymentDescription += `За 1-ый час :${HOUR * MONEY_PER_MINUTE_FIRST_HOUR}: `;
-  minutes -= HOUR;
+//   const result = {
+//     forPayment: 0,
+//     paymentDescription: ''
+//   }
 
-  result.forPayment += HOUR * MONEY_PER_MINUTE_SECOND_HOUR;
-  result.paymentDescription += `За 2-ой час :${HOUR * MONEY_PER_MINUTE_SECOND_HOUR}: `;
-  minutes -= HOUR;
+//   // Если гость пробыл час или меньше
+//   if (minutes <= HOUR) {
+//     result.forPayment = minutes * MONEY_PER_MINUTE_FIRST_HOUR;
+//     result.paymentDescription += `За 1-ый час :${minutes * MONEY_PER_MINUTE_FIRST_HOUR}: `;
+//     return result;
+//   }
 
-  result.forPayment += minutes * MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS;
-  result.paymentDescription += `За 3-ий час :${minutes * MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS}: `;
+//   // Если гость пробыл два часа или меньше
+//   if (minutes <= HOUR * 2) {
+//     result.forPayment += HOUR * MONEY_PER_MINUTE_FIRST_HOUR;
+//     result.paymentDescription += `За 1-ый час :${HOUR * MONEY_PER_MINUTE_FIRST_HOUR}: `;
+//     minutes -= HOUR;
 
-  return result;
-}
+//     result.forPayment += minutes * MONEY_PER_MINUTE_SECOND_HOUR;
+//     result.paymentDescription += `За 2-ой час :${minutes * MONEY_PER_MINUTE_SECOND_HOUR}: `;
+//     return result;
+//   }
 
-const childTariff = minutes => {
-  const HOUR = 60;
-  const MONEY_PER_MINUTE_FIRST_HOUR = 4.2;
-  const MONEY_PER_MINUTE_SECOND_HOUR = 3;
-  const MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS = 2;
+//   // Если гость пробыл больше двух часов
+//   result.forPayment += HOUR * MONEY_PER_MINUTE_FIRST_HOUR;
+//   result.paymentDescription += `За 1-ый час :${HOUR * MONEY_PER_MINUTE_FIRST_HOUR}: `;
+//   minutes -= HOUR;
 
-  let result = {
-    forPayment: 0,
-    paymentDescription: ''
-  }
+//   result.forPayment += HOUR * MONEY_PER_MINUTE_SECOND_HOUR;
+//   result.paymentDescription += `За 2-ой час :${HOUR * MONEY_PER_MINUTE_SECOND_HOUR}: `;
+//   minutes -= HOUR;
 
-  // Если гость пробыл час или меньше
-  if (minutes <= HOUR) {
-    result.forPayment = minutes * MONEY_PER_MINUTE_FIRST_HOUR;
-    result.paymentDescription += `За 1-ый час :${minutes * MONEY_PER_MINUTE_FIRST_HOUR}: `;
+//   result.forPayment += minutes * MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS;
+//   result.paymentDescription += `За 3-ий час и более:${minutes * MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS}: `;
 
-    result.forPayment = Math.round(result.forPayment);
-    return result;
-  }
+//   return result;
+// }
 
-  // Если гость пробыл два часа или меньше
-  if (minutes <= HOUR * 2) {
-    result.forPayment += HOUR * MONEY_PER_MINUTE_FIRST_HOUR;
-    result.paymentDescription += `За 1-ый час :${HOUR * MONEY_PER_MINUTE_FIRST_HOUR}: `;
-    minutes -= HOUR;
-
-    result.forPayment += minutes * MONEY_PER_MINUTE_SECOND_HOUR;
-    result.paymentDescription += `За 2-ой час :${minutes * MONEY_PER_MINUTE_SECOND_HOUR}: `;
-
-    result.forPayment = Math.round(result.forPayment);
-    return result;
-  }
-
-  // Если гость пробыл больше двух часов
-  result.forPayment += HOUR * MONEY_PER_MINUTE_FIRST_HOUR;
-  result.paymentDescription += `За 1-ый час :${HOUR * MONEY_PER_MINUTE_FIRST_HOUR}: `;
-  minutes -= HOUR;
-
-  result.forPayment += HOUR * MONEY_PER_MINUTE_SECOND_HOUR;
-  result.paymentDescription += `За 2-ой час :${HOUR * MONEY_PER_MINUTE_SECOND_HOUR}: `;
-  minutes -= HOUR;
-
-  result.forPayment += minutes * MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS;
-  result.paymentDescription += `За 3-ий час :${minutes * MONEY_PER_MINUTE_MORE_THAN_TWO_HOURS}: `;
-
-  result.forPayment = Math.round(result.forPayment);
-  return result;
-}
+// =======================================================================================================
