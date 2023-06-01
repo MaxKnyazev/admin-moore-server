@@ -1,4 +1,4 @@
-import { convertTimeStringToObject, calculateMinutes, calculateSeconds, standartTariff, childTariff } from '../utils/utils';
+import { convertTimeStringToObject, calculateMinutes, calculateSeconds, standartTariff, childTariff, convertMinutesToMoney } from '../utils/utils';
 
 describe('convertTimeStringToObject work', () => {
   test('throw Error value do not make', () => {
@@ -52,21 +52,15 @@ describe('convertTimeStringToObject work', () => {
     expect(() => convertTimeStringToObject('00:00:99')).toThrow('Значение секунд не лежит в диапазоне 0-59');
   });
   test('valided time', () => {
-    expect(convertTimeStringToObject('00:00:00')).toStrictEqual({
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-    });
-    expect(convertTimeStringToObject('23:59:59')).toStrictEqual({
-        hours: 23,
-        minutes: 59,
-        seconds: 59,
-    });
-    expect(convertTimeStringToObject('01:01:01')).toStrictEqual({
-        hours: 1,
-        minutes: 1,
-        seconds: 1,
-    });
+    expect(convertTimeStringToObject('00:00:00')).toStrictEqual(
+      { hours: 0, minutes: 0, seconds: 0, }
+    );
+    expect(convertTimeStringToObject('23:59:59')).toStrictEqual(
+      { hours: 23, minutes: 59, seconds: 59, }
+    );
+    expect(convertTimeStringToObject('01:01:01')).toStrictEqual(
+      { hours: 1, minutes: 1, seconds: 1, }
+    );
   });
 });
 
@@ -155,3 +149,232 @@ describe('childTariff work', () => {
     expect(childTariff(200)).toStrictEqual({forPayment: 592, paymentDescription: 'За 1-ый час :252: За 2-ой час :180: За 3-ий час и более:160: '});
   });
 });
+
+describe('convertMinutesToMoney work', () => {
+  test('throw Error value do not make', () => {
+    expect(() => convertMinutesToMoney()).toThrow();
+    expect(() => convertMinutesToMoney({})).toThrow();
+    expect(() => convertMinutesToMoney([])).toThrow();
+  });
+
+  test('bad value', () => {
+    expect(() => convertMinutesToMoney(0)).toThrow();
+    expect(() => convertMinutesToMoney('0')).toThrow();
+    expect(() => convertMinutesToMoney(true)).toThrow();
+    expect(() => convertMinutesToMoney(false)).toThrow();
+    expect(() => convertMinutesToMoney({breakMinutes : 0, isHoliday : false, tariffsId : '1'})).toThrow();
+    expect(() => convertMinutesToMoney({minutes : 0, isHoliday : false, tariffsId : '1'})).toThrow();
+  });
+
+  test('convertMinutesToMoney get result', () => {
+    expect(convertMinutesToMoney(
+      { minutes : 2, breakMinutes : 1, isHoliday : false, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 6, paymentDescription: 'За 1-ый час :6:  Перерыв :1:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 2, breakMinutes : 1, isHoliday : true, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 6, paymentDescription: 'За 1-ый час :6:  Перерыв :1:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 60, breakMinutes : 1, isHoliday : false, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 354, paymentDescription: 'За 1-ый час :354:  Перерыв :1:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 60, breakMinutes : 1, isHoliday : true, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 354, paymentDescription: 'За 1-ый час :354:  Перерыв :1:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 70, breakMinutes : 10, isHoliday : false, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 360, paymentDescription: 'За 1-ый час :360:  Перерыв :10:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 70, breakMinutes : 10, isHoliday : true, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 360, paymentDescription: 'За 1-ый час :360:  Перерыв :10:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 62, breakMinutes : 1, isHoliday : false, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 363, paymentDescription: 'За 1-ый час :360: За 2-ой час :3:  Перерыв :1:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 62, breakMinutes : 1, isHoliday : true, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 363, paymentDescription: 'За 1-ый час :360: За 2-ой час :3:  Перерыв :1:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 121, breakMinutes : 1, isHoliday : false, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 540, paymentDescription: 'За 1-ый час :360: За 2-ой час :180:  Перерыв :1:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 121, breakMinutes : 1, isHoliday : true, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 540, paymentDescription: 'За 1-ый час :360: За 2-ой час :180:  Перерыв :1:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 122, breakMinutes : 1, isHoliday : false, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 542, paymentDescription: 'За 1-ый час :360: За 2-ой час :180: За 3-ий час и более:2:  Перерыв :1:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 122, breakMinutes : 1, isHoliday : true, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 542, paymentDescription: 'За 1-ый час :360: За 2-ой час :180: За 3-ий час и более:2:  Перерыв :1:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 181, breakMinutes : 1, isHoliday : false, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 600, paymentDescription: 'Стопчек :600:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 181, breakMinutes : 1, isHoliday : true, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 660, paymentDescription: 'За 1-ый час :360: За 2-ой час :180: За 3-ий час и более:120:  Перерыв :1:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 201, breakMinutes : 1, isHoliday : false, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 600, paymentDescription: 'Стопчек :600:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 201, breakMinutes : 1, isHoliday : true, tariffsId : '1'}
+    )).toStrictEqual(
+      { forPayment: 700, paymentDescription: 'Стопчек :700:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 2, breakMinutes : 1, isHoliday : false, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 4, paymentDescription: 'За 1-ый час :4:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 2, breakMinutes : 1, isHoliday : true, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 4, paymentDescription: 'За 1-ый час :4:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 60, breakMinutes : 1, isHoliday : false, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 248, paymentDescription: 'За 1-ый час :248:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 60, breakMinutes : 1, isHoliday : true, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 248, paymentDescription: 'За 1-ый час :248:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 61, breakMinutes : 1, isHoliday : false, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 252, paymentDescription: 'За 1-ый час :252:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 61, breakMinutes : 1, isHoliday : true, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 252, paymentDescription: 'За 1-ый час :252:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 62, breakMinutes : 1, isHoliday : false, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 255, paymentDescription: 'За 1-ый час :252: За 2-ой час :3:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 62, breakMinutes : 1, isHoliday : true, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 255, paymentDescription: 'За 1-ый час :252: За 2-ой час :3:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 121, breakMinutes : 1, isHoliday : false, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 432, paymentDescription: 'За 1-ый час :252: За 2-ой час :180:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 121, breakMinutes : 1, isHoliday : true, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 432, paymentDescription: 'За 1-ый час :252: За 2-ой час :180:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 122, breakMinutes : 1, isHoliday : false, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 434, paymentDescription: 'За 1-ый час :252: За 2-ой час :180: За 3-ий час и более:2:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 122, breakMinutes : 1, isHoliday : true, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 434, paymentDescription: 'За 1-ый час :252: За 2-ой час :180: За 3-ий час и более:2:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 181, breakMinutes : 1, isHoliday : false, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 552, paymentDescription: 'За 1-ый час :252: За 2-ой час :180: За 3-ий час и более:120:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 181, breakMinutes : 1, isHoliday : true, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 552, paymentDescription: 'За 1-ый час :252: За 2-ой час :180: За 3-ий час и более:120:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 201, breakMinutes : 1, isHoliday : false, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 592, paymentDescription: 'За 1-ый час :252: За 2-ой час :180: За 3-ий час и более:160:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 201, breakMinutes : 1, isHoliday : true, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 592, paymentDescription: 'За 1-ый час :252: За 2-ой час :180: За 3-ий час и более:160:  Перерыв :1: Детский тариф'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 301, breakMinutes : 1, isHoliday : false, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 600, paymentDescription: 'Стопчек :600:'}
+    );
+
+    expect(convertMinutesToMoney(
+      { minutes : 301, breakMinutes : 1, isHoliday : true, tariffsId : '2'}
+    )).toStrictEqual(
+      { forPayment: 700, paymentDescription: 'Стопчек :700:'}
+    );
+  });
+});
+
+
+
+
+
+

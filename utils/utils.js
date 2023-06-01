@@ -147,6 +147,10 @@ export const childTariff = minutes => {
 
 
 export const convertMinutesToMoney = ({minutes, breakMinutes, isHoliday = false, tariffsId = '1'}) => {
+  if (minutes === undefined || breakMinutes === undefined) {
+    throw new Error('Значение времени не передано!');
+  }
+
   let result;
 
   switch (tariffsId) {
@@ -157,21 +161,12 @@ export const convertMinutesToMoney = ({minutes, breakMinutes, isHoliday = false,
 
     case '2':
         result = childTariff(minutes - breakMinutes);
-        // result = standartTariff(minutes - breakMinutes);
-        result.paymentDescription += ` Перерыв :${breakMinutes}:`
-        result.paymentDescription += ` Детский тариф`
+        result.paymentDescription += ` Перерыв :${breakMinutes}: Детский тариф`
       break;
 
     default:
       break;
   }
-
-  // if (isHoliday) {
-  //   // result.forPayment = result.forPayment >= 700 ? 700 : Math.round(result.forPayment); // Проверка на стопчек по праздникам и выходным
-  //   result.forPayment = result.forPayment >= 700 ? 700 : Math.round(result.forPayment); // Проверка на стопчек по праздникам и выходным
-  // } else {
-  //   result.forPayment = result.forPayment >= 600 ? 600 : Math.round(result.forPayment); // Проверка на стопчек по будним дням
-  // }
 
   if (isHoliday) {
     if (result.forPayment >= 700) {
