@@ -16,6 +16,17 @@ class GuestsServices {
     }
   }
 
+  getOneGuestById = async (id) => {
+    try {
+      let guest = await Guest.findOne({
+        where: { id }
+      })      
+      return guest
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+  
   addGuest = async (options) => {
     try {
       const guest = await Guest.create(options);
@@ -53,9 +64,12 @@ class GuestsServices {
         }
       )
       
-      let editedGuest = await Guest.findOne({
-        where: { id }
-      })
+      // let editedGuest = await Guest.findOne({
+      //   where: { id }
+      // })
+
+      let editedGuest = await this.getOneGuestById(id);
+
       editedGuest = editedGuest.dataValues;
 
       return editedGuest;
@@ -64,47 +78,81 @@ class GuestsServices {
     }
   }
 
+  //*************************************************************************** 2023-06-07 */
+
   calculateMoney = async (id, stopTime) => {
     try {
-      let editedGuest = await this.editGuest(
-        id, 
-        { 
-          stop_time: stopTime 
-        }
-      )
+      let guest = await this.getOneGuestById(id);
+      guest.stop_time = stopTime;
 
       let minutes = calculateMinutes(
-        convertTimeStringToObject(editedGuest.start_time),
-        convertTimeStringToObject(editedGuest.stop_time),
+        convertTimeStringToObject(guest.start_time),
+        convertTimeStringToObject(guest.stop_time),
       )
-
-      editedGuest = await this.editGuest(
-        id, 
-        { 
-          minutes, 
-        }
-      )
+      guest.minutes = minutes;
 
       let result = convertMinutesToMoney({
-        minutes: editedGuest.minutes,
-        breakMinutes: editedGuest.break_minutes,
+        minutes,
+        breakMinutes: guest.break_minutes,
         isHoliday: false,
-        tariffsId: editedGuest.tariffs_id,
+        tariffsId: guest.tariffs_id,
       })
 
-      editedGuest = await this.editGuest(
-        id, 
-        { 
-          for_payment: result.forPayment, 
-          payment_description: result.paymentDescription,
-        }
-      )
+      guest.for_payment = result.forPayment;
+      guest.payment_description = result.paymentDescription;
+      
+      console.log(`guest*****************************`);
+      console.log(guest);
 
-      return editedGuest;
+      return guest;
     } catch (error) {
       throw new Error(error);
     }
   }
+
+  // calculateMoney = async (id, stopTime) => {
+  //   try {
+  //     let editedGuest = await this.editGuest(
+  //       id, 
+  //       { 
+  //         stop_time: stopTime 
+  //       }
+  //     )
+
+  //     let minutes = calculateMinutes(
+  //       convertTimeStringToObject(editedGuest.start_time),
+  //       convertTimeStringToObject(editedGuest.stop_time),
+  //     )
+
+  //     editedGuest = await this.editGuest(
+  //       id, 
+  //       { 
+  //         minutes, 
+  //       }
+  //     )
+
+  //     let result = convertMinutesToMoney({
+  //       minutes: editedGuest.minutes,
+  //       breakMinutes: editedGuest.break_minutes,
+  //       isHoliday: false,
+  //       tariffsId: editedGuest.tariffs_id,
+  //     })
+
+  //     editedGuest = await this.editGuest(
+  //       id, 
+  //       { 
+  //         for_payment: result.forPayment, 
+  //         payment_description: result.paymentDescription,
+  //       }
+  //     )
+
+  //     return editedGuest;
+  //   } catch (error) {
+  //     throw new Error(error);
+  //   }
+  // }
+
+  //*************************************************************************** 2023-06-07 */
 
   calculateBreak = async (id, breakStopTime) => {
     try {
