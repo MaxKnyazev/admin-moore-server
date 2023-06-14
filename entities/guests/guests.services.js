@@ -160,6 +160,21 @@ class GuestsServices {
     }
   }
 
+  getGuestsByGroupId = async (groupId) => {
+    try {
+      const guestsByGroupId = await Guest.findAll({
+        raw: true,
+        where: {
+          group_id: groupId,
+        }
+      });
+      
+      return guestsByGroupId;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
   // deleteUser = async (id) => {
   //   try {
   //     const countDeletedUsers = await User.destroy({

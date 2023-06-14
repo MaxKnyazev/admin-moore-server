@@ -24,5 +24,8 @@ guestsRoutes.route('/break/:id')
 guestsRoutes.route('/getByShiftsId/:shiftsId')
   .get(guestsControllers.getGuestsByShiftsId);
 
+guestsRoutes.route('/getByGroupId/:groupId')
+  .get(guestsControllers.getGuestsByGroupId);
+
 
 export { guestsRoutes };

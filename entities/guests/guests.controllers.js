@@ -147,6 +147,22 @@ class GuestsControllers {
       })
     }
   }
+
+  getGuestsByGroupId = async (req, res) => {
+    try {
+      const groupId = req.params.groupId;
+      const guestsByGroupId = await guestsServices.getGuestsByGroupId(groupId);
+      
+      return res.status(200).json({
+        guestsByGroupId,
+        error: null,
+      })
+    } catch (error) {
+      return res.status(500).json({
+        error: error.message,
+      })
+    }
+  }
 }
 
 export default new GuestsControllers();
